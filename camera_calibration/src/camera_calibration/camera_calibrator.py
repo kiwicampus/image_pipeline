@@ -48,6 +48,10 @@ from message_filters import ApproximateTimeSynchronizer
 from std_msgs.msg import String
 from std_srvs.srv import Empty
 
+from rclpy.qos import qos_profile_sensor_data
+from camera_calibration.calibrator import CAMERA_MODEL
+
+
 class SpinThread(threading.Thread):
     """
     Thread that spins the ros node, while imshow runs in the main thread
@@ -116,7 +120,7 @@ class CalibrationNode(Node):
         ts = synchronizer([lsub, rsub], 4)
         ts.registerCallback(self.queue_stereo)
 
-        msub = message_filters.Subscriber(self, sensor_msgs.msg.Image, 'image')
+        msub = message_filters.Subscriber(self, sensor_msgs.msg.Image, 'image', qos_profile=qos_profile_sensor_data)
         msub.registerCallback(self.queue_monocular)
 
         self.q_mono = deque([], 1)
